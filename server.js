@@ -74,15 +74,27 @@ io.sockets.on('connection', socket => {
   socket.on('message', message => socket.broadcast.to(room).emit('message', message));
   socket.on('find', () => {
     const url = socket.request.headers.referer.split('/');
-    room = url[url.length - 1];
-    const sr = io.sockets.adapter.rooms[room];
+    //room = url[url.length - 1];
+    room = socket.request.headers['my-custom-header'];
+    console.log("URL & Room: ", socket.request.headers.referer, room, io.sockets.adapter.rooms.get(room));
+    const sr = io.sockets.adapter.rooms.get(room);
     if (sr === undefined) {
       // no room with such name is found so create it
       socket.join(room);
       socket.emit('create');
-    } else if (sr.length === 1) {
+    } else if (sr.size < 10) {
       socket.emit('join');
-    } else { // max two clients
+
+      // copied from functions below
+
+      data.sid = socket.id;
+      // sending to all clients in the room (channel) except sender
+      socket.broadcast.to(room).emit('approve', data);
+      io.sockets.connected[id].join(room);
+      // sending to all clients in 'game' room(channel), include sender
+      io.in(room).emit('bridge');
+
+    } else { // max 10 clients
       socket.emit('full', room);
     }
   });
