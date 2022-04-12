@@ -42,23 +42,8 @@ const app = express()
   const httpServer = http.createServer(app).listen(port);
   
   const io = sio(httpServer, {cors: {origin: "http://localhost:3001", allowedHeaders: ["my-custom-header"], credentials: true}});
-  // const io = sio(httpServer, {
-  //   cors: {
-  //     origin: "http://localhost:3001"
-  //   }
-  // });
-  //io.origins(['http://localhost:3000', '*']);
-  
-
-  // io = sio(server, {
-  // });
-
-  
-
-  
-  
-
-  console.log("server started: ");
+ 
+  console.log("server started!");
 // compress all requests
 
 //app.use(compression());
@@ -67,6 +52,7 @@ const app = express()
 //app.use(favicon('./dist/favicon.ico'));
 // Switch off the default 'X-Powered-By: Express' header
 app.disable('x-powered-by');
+
 io.sockets.on('connection', socket => {
   console.log("====connected!!!!: ");
   let room = '';
@@ -87,12 +73,12 @@ io.sockets.on('connection', socket => {
 
       // copied from functions below
 
-      data.sid = socket.id;
+      //data.sid = socket.id;
       // sending to all clients in the room (channel) except sender
-      socket.broadcast.to(room).emit('approve', data);
-      io.sockets.connected[id].join(room);
+      //socket.broadcast.to(room).emit('approve', data);
+      //io.sockets.connected[id].join(room);
       // sending to all clients in 'game' room(channel), include sender
-      io.in(room).emit('bridge');
+      //io.in(room).emit('bridge');
 
     } else { // max 10 clients
       socket.emit('full', room);
